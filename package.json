@@ -1,0 +1,19 @@
+{
+  "name": "crow-service",
+  "version": "0.1.0",
+  "description": "A read-only web viewer and JSON API for a folder of Crow (.crow) documents",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  }
+}
