@@ -4,6 +4,9 @@
   "description": "A read-only web viewer and JSON API for a folder of Crow (.crow) documents",
   "type": "module",
   "private": true,
+  "bin": {
+    "crowd": "src/index.ts"
+  },
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",

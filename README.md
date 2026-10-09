@@ -8,20 +8,30 @@ are only ever read, so the Crow app and CLI can keep editing them. Changes show 
 request.
 
 > Anyone who can reach the server can read every document in the folder. Bind it to `127.0.0.1`
-> (`CROW_HOST`) or put it behind something that controls access if that matters.
+> (`--host`) or put it behind something that controls access if that matters.
 
 ## Running
 
+Install the `crowd` command once:
+
 ```bash
 bun install
-CROW_DOCS_DIR=~/Documents/Crow bun run start
+bun link
 ```
 
-| Env var | Default | |
+Then run it from a directory with a `crows` folder of `.crow` documents, or point it elsewhere:
+
+```bash
+crowd
+crowd --dir ~/Documents/Crow --port 3000
+```
+
+| Option | Default | |
 | --- | --- | --- |
-| `CROW_DOCS_DIR` | `./data/documents` | Folder of `.crow` documents to serve |
-| `CROW_PORT` / `CROW_HOST` | `8090` / `0.0.0.0` | |
-| `CROW_PUBLIC_URL` | request origin | Base for file urls in API responses (set it behind a proxy) |
+| `-d`, `--dir` | `./crows` | Folder of `.crow` documents, relative to where you run it |
+| `-p`, `--port` | `8090` | |
+| `--host` | `0.0.0.0` | Interface to bind; `127.0.0.1` keeps it to this machine |
+| `--public-url` | request origin | Base for file urls in API responses (set it behind a proxy) |
 
 ```bash
 bun test
