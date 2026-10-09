@@ -57,7 +57,7 @@ All endpoints are `GET` and send `Access-Control-Allow-Origin: *`.
 ```http
 GET /api                                              endpoint list
 GET /api/documents                                    documents with their tables and record counts
-GET /api/documents/:doc                               schema: tables, fields (with choices), views
+GET /api/documents/:doc                               schema: tables, fields (with choices), views (with config)
 GET /api/documents/:doc/tables/:table                 one table's schema
 GET /api/documents/:doc/tables/:table/records         ?where=&q=&sort=&page=&perPage=&expand=
 GET /api/documents/:doc/tables/:table/records/:id     ?expand=
@@ -102,4 +102,5 @@ document's own order.
 
 - Documents are loaded whole into memory and cached by `data.json`'s modification time. That suits
   Crow-sized data: thousands of records, not millions.
-- Crow's saved views (filters, kanban, dashboards) are listed in the schema but not applied.
+- Crow's saved views (filters, kanban, dashboards) are listed in the schema with their `config` as
+  stored (see crow/docs/crow-format.md), but the service doesn't apply them to record listings.

@@ -248,6 +248,7 @@ export function tableSchema(project: Project, table: Table) {
     name: table.name,
     recordCount: table.records.length,
     fields: table.fields.map((f) => fieldSchema(project, f)),
-    views: table.views.map((v) => ({ id: v.id, name: v.name, type: v.type }))
+    // Config is passed through as stored: it refers to fields by id, which the fields above carry.
+    views: table.views.map((v) => ({ id: v.id, name: v.name, type: v.type, config: v.config ?? {} }))
   }
 }

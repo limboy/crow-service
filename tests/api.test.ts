@@ -117,6 +117,7 @@ describe('JSON API', () => {
     const status = doc.data.tables[0].fields[1]
     expect(status.choices.map((c: any) => c.name)).toEqual(['Todo', 'Done'])
     expect(doc.data.tables[0].fields[6].relation).toEqual({ table: 'Comments', multiple: true })
+    expect(doc.data.tables[0].views).toEqual([{ id: 'v1', name: 'Table', type: 'table', config: { hiddenFieldIds: [] } }])
     expect((await get('/api/documents/Nope')).status).toBe(404)
     expect((await get('/api')).data.readOnly).toBe(true)
   })
