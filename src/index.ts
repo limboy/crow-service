@@ -9,8 +9,8 @@ Serves a folder of .crow documents: readable pages at /, a JSON API under /api.
 
 Options:
   -d, --dir <path>     Folder of .crow documents (default: ./crows)
-  -p, --port <port>    Port to listen on (default: 8090)
-      --host <host>    Interface to bind (default: 0.0.0.0, all interfaces)
+  -p, --port <port>    Port to listen on (default: 8073)
+      --host <host>    Interface to bind (default: 127.0.0.1, this machine only)
       --public-url <url>  Base for file urls in API responses, e.g. behind a proxy
   -h, --help           Show this help
 `
@@ -36,7 +36,7 @@ if (values.help) {
   process.exit(0)
 }
 
-const port = Number(values.port ?? 8090)
+const port = Number(values.port ?? 8073)
 if (!Number.isInteger(port) || port < 0 || port > 65535) {
   console.error(`Invalid port "${values.port}"`)
   process.exit(1)
@@ -46,7 +46,7 @@ const docsDir = resolve(values.dir ?? 'crows')
 
 const server = startServer({
   docsDir,
-  hostname: values.host ?? '0.0.0.0',
+  hostname: values.host ?? '127.0.0.1',
   port,
   publicUrl: values['public-url']?.replace(/\/+$/, '') || undefined
 })

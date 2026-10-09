@@ -7,8 +7,8 @@ clients get JSON under `/api`. There are no accounts and nothing can be edited: 
 are only ever read, so the Crow app and CLI can keep editing them. Changes show up on the next
 request.
 
-> Anyone who can reach the server can read every document in the folder. Bind it to `127.0.0.1`
-> (`--host`) or put it behind something that controls access if that matters.
+> Anyone who can reach the server can read every document in the folder. It binds to `127.0.0.1` by
+> default; if you expose it with `--host 0.0.0.0`, put it behind something that controls access.
 
 ## Running
 
@@ -29,8 +29,8 @@ crowd --dir ~/Documents/Crow --port 3000
 | Option | Default | |
 | --- | --- | --- |
 | `-d`, `--dir` | `./crows` | Folder of `.crow` documents, relative to where you run it |
-| `-p`, `--port` | `8090` | |
-| `--host` | `0.0.0.0` | Interface to bind; `127.0.0.1` keeps it to this machine |
+| `-p`, `--port` | `8073` | |
+| `--host` | `127.0.0.1` | Interface to bind; `0.0.0.0` exposes it on all interfaces |
 | `--public-url` | request origin | Base for file urls in API responses (set it behind a proxy) |
 
 ```bash
@@ -77,8 +77,8 @@ urls into this server:
     "Status": "Done",
     "Tags": ["sci-fi", "classic"],
     "Pages": 412,
-    "Cover": "http://localhost:8090/api/documents/Library/files/images/cover.png",
-    "Files": [{ "url": "http://localhost:8090/api/documents/Library/files/attachments/a1.txt", "name": "notes.txt", "size": 5 }],
+    "Cover": "http://localhost:8073/api/documents/Library/files/images/cover.png",
+    "Files": [{ "url": "http://localhost:8073/api/documents/Library/files/attachments/a1.txt", "name": "notes.txt", "size": 5 }],
     "Comments": ["c1"]
   },
   "expand": { "Comments": [{ "id": "c1", "fields": { "Body": "A classic.", "Books": ["b1"] } }] }
