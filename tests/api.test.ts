@@ -107,6 +107,7 @@ describe('JSON API', () => {
         name: 'Library',
         id: PID,
         updatedAt: now,
+        version: expect.any(String),
         tables: [
           { id: 'tbl-books', name: 'Books', recordCount: 3 },
           { id: 'tbl-comments', name: 'Comments', recordCount: 1 }
@@ -174,12 +175,29 @@ describe('JSON API', () => {
     expect((await fetch(`${base}${books}/b1`, { method: 'DELETE' })).status).toBe(405)
   })
 
+  test('ETags and versions', async () => {
+    const first = await fetch(`${base}${books}?sort=Title`)
+    const etag = first.headers.get('ETag')!
+    const version = first.headers.get('X-Crow-Version')!
+    expect(etag).toMatch(/^".+"$/)
+    expect(version).toBeTruthy()
+    const again = await fetch(`${base}${books}?sort=Title`, { headers: { 'If-None-Match': etag } })
+    expect(again.status).toBe(304)
+    expect(again.headers.get('X-Crow-Version')).toBe(version)
+    expect(await again.text()).toBe('')
+    const other = await fetch(`${base}${books}?sort=-Title`, { headers: { 'If-None-Match': etag } })
+    expect(other.status).toBe(200)
+    expect((await fetch(`${base}/api/documents/Nope`)).headers.get('ETag')).toBeNull()
+  })
+
   test('edits made in the app show up', async () => {
+    const before = (await fetch(`${base}${books}/b2`)).headers.get('X-Crow-Version')
     const data = JSON.parse(readFileSync(join(docPath(), 'data.json'), 'utf-8'))
     data.tables[0].records[1].values['f-title'] = 'Piranesi (edited)'
     await Bun.sleep(5)
     writeFileSync(join(docPath(), 'data.json'), JSON.stringify(data))
     expect((await get(`${books}/b2`)).data.fields.Title).toBe('Piranesi (edited)')
+    expect((await fetch(`${base}${books}/b2`)).headers.get('X-Crow-Version')).not.toBe(before)
   })
 })
 

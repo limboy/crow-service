@@ -98,6 +98,11 @@ Listing parameters:
 Response: `{ page, perPage, totalItems, totalPages, items }`. Without `sort`, records come in the
 document's own order.
 
+JSON responses carry an `ETag` and answer `If-None-Match` with `304 Not Modified`. Each document
+has a `version` (in `/api/documents`, and as an `X-Crow-Version` header on everything under
+`/api/documents/:doc`) that changes whenever its `data.json` does, so clients can keep a cached
+copy until it changes.
+
 ## Notes
 
 - Documents are loaded whole into memory and cached by `data.json`'s modification time. That suits

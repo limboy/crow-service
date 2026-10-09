@@ -30,7 +30,10 @@ export function startServer(options: ServerOptions) {
       res = kind === 'api' ? json({ status, message }, status) : notFoundPage(message)
       if (kind === 'page' && status !== 404) res = new Response(res.body, { status, headers: res.headers })
     }
-    if (kind === 'api') res.headers.set('Access-Control-Allow-Origin', '*')
+    if (kind === 'api') {
+      res.headers.set('Access-Control-Allow-Origin', '*')
+      res = await revalidate(req, res, ctx)
+    }
     return res
   }
   const get = (handler: Handler, kind: 'api' | 'page') => ({ GET: wrap(handler, kind) })
@@ -66,6 +69,29 @@ export function startServer(options: ServerOptions) {
         : notFoundPage(`Nothing at ${path}.`)
     }
   })
+}
+
+/**
+ * JSON responses carry an ETag, answered with 304 when the client already has it, and
+ * per-document ones also carry `X-Crow-Version` so clients know when to drop their cache.
+ */
+async function revalidate(req: Request, res: Response, ctx: RequestContext): Promise<Response> {
+  const doc = ctx.params.doc
+  const version = doc ? ctx.store.version(doc) : undefined
+  if (version) res.headers.set('X-Crow-Version', version)
+  res.headers.set('Access-Control-Expose-Headers', 'ETag, X-Crow-Version')
+  if (res.status !== 200 || !res.headers.get('Content-Type')?.startsWith('application/json')) return res
+
+  const body = await res.arrayBuffer()
+  const etag = `"${Bun.hash(body).toString(36)}"`
+  res.headers.set('ETag', etag)
+  res.headers.set('Cache-Control', 'no-cache')
+  const match = req.headers.get('If-None-Match')?.split(',').map((t) => t.trim().replace(/^W\//, ''))
+  if (match?.includes(etag) || match?.includes('*')) {
+    res.headers.delete('Content-Length')
+    return new Response(null, { status: 304, headers: res.headers })
+  }
+  return new Response(body, { status: 200, headers: res.headers })
 }
 
 const API_INDEX = {

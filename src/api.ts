@@ -66,6 +66,7 @@ export async function listDocuments(ctx: RequestContext) {
       name,
       id: project.id,
       updatedAt: project.updatedAt,
+      version: ctx.store.version(name),
       tables: project.tables.map((t) => ({ id: t.id, name: t.name, recordCount: t.records.length }))
     })
   }

@@ -2,7 +2,8 @@
  * The folder of `.crow` documents being served, read-only. Each document is a
  * directory holding `data.json` plus media folders. Reads are cached by
  * `data.json`'s mtime/size, so edits made in the app or CLI show up on the
- * next request.
+ * next request. The same mtime/size is the document's version, which clients use
+ * to tell when their cached copy is out of date.
  */
 import { promises as fs } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -54,6 +55,12 @@ export class DocumentStore {
     const project = migrateProject(raw)
     this.cache.set(name, { mtimeMs: stat.mtimeMs, size: stat.size, project })
     return project
+  }
+
+  /** Changes whenever `data.json` does. Only known once the document has been loaded. */
+  version(name: string): string | undefined {
+    const cached = this.cache.get(name)
+    return cached && `${Math.trunc(cached.mtimeMs).toString(36)}-${cached.size.toString(36)}`
   }
 
   mediaPath(name: string, folder: MediaFolder, file: string): string {
